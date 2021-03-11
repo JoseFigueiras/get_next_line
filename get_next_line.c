@@ -1,35 +1,9 @@
 #include "get_next_line.h"
 
-static char	*get_line(char *str);
-static char	*get_save(char *save);
-static int	free_and_return_error(char *to_free);
-
-int	get_next_line(int fd, char **line)
+static int	free_and_return_error(char *to_free)
 {
-	char			*buff;
-	static char		*save;
-	int				reader;
-
-	if (fd < 0 || !line || BUFFER_SIZE <= 0)
-		return (-1);
-	buff = malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buff)
-		return (-1);
-	reader = 1;
-	while (!has_nl(save) && reader != 0)
-	{
-		reader = read(fd, buff, BUFFER_SIZE);
-		if (reader == -1)
-			return (free_and_return_error(buff));
-		buff[reader] = '\0';
-		save = join_str(save, buff);
-	}
-	free(buff);
-	*line = get_line(save);
-	save = get_save(save);
-	if (reader == 0)
-		return (0);
-	return (1);
+	free(to_free);
+	return (-1);
 }
 
 static char	*get_line(char *str)
@@ -83,8 +57,30 @@ static char	*get_save(char *save)
 	return (ret);
 }
 
-static int	free_and_return_error(char *to_free)
+int	get_next_line(int fd, char **line)
 {
-	free(to_free);
-	return (-1);
+	char			*buff;
+	static char		*save;
+	int				reader;
+
+	if (fd < 0 || !line || BUFFER_SIZE <= 0)
+		return (-1);
+	buff = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!buff)
+		return (-1);
+	reader = 1;
+	while (!has_nl(save) && reader != 0)
+	{
+		reader = read(fd, buff, BUFFER_SIZE);
+		if (reader == -1)
+			return (free_and_return_error(buff));
+		buff[reader] = '\0';
+		save = join_str(save, buff);
+	}
+	free(buff);
+	*line = get_line(save);
+	save = get_save(save);
+	if (reader == 0)
+		return (0);
+	return (1);
 }

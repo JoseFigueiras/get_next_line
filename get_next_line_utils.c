@@ -1,6 +1,6 @@
 #include "get_next_line.h"
 
-int	has_nl(char *str)
+int		has_nl(char *str)
 {
 	if (!str)
 		return (0);
